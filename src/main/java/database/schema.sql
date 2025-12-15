@@ -1,5 +1,5 @@
 --Create type continent as enum
-CREATE TYPE continent AS ENUM ('GK, DEF, MIDF, STR');
+CREATE TYPE continent AS ENUM ('AFRICA', 'EUROPA', 'ASIA', 'AMERICA');
 
 -- Table: Team
 CREATE TABLE Team (
@@ -9,7 +9,7 @@ CREATE TABLE Team (
 );
 
 --Create type position as enum
-CREATE TYPE "position" AS ENUM ('AFRICA', 'EUROPA', 'ASIA', 'AMERICA');
+CREATE TYPE "position" AS ENUM ('GK, DEF, MIDF, STR');
 
 -- Table: Player
 CREATE TABLE Player (
