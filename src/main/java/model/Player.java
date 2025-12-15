@@ -79,4 +79,8 @@ public class Player {
                 ", team=" + team +
                 '}';
     }
+
+    public Integer getPlayersCount(){
+        throw new RuntimeException("Not supported yet");
+    }
 }

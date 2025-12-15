@@ -69,4 +69,8 @@ public class Team {
                 ", players=" + players +
                 '}';
     }
+
+    public String getTeamName(){
+        throw new RuntimeException("Not supported yet");
+    }
 }
