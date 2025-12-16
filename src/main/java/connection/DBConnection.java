@@ -7,13 +7,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private final Dotenv dotenv = Dotenv.configure().load();
+    private static final Dotenv dotenv = Dotenv.configure().load();
 
-    private final String jdbcUrl = dotenv.get("jdbcUrl");
-    private final String username = dotenv.get("username");
-    private final String password = dotenv.get("password");
+    private static final String jdbcUrl = dotenv.get("jdbcUrl");
+    private static final String username = dotenv.get("username");
+    private static final String password = dotenv.get("password");
 
-    public Connection getDBConnection(){
+    public static Connection getDBConnection(){
         try {
             assert jdbcUrl != null;
             return DriverManager.getConnection(jdbcUrl, username, password);
