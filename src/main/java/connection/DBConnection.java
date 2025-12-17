@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final Dotenv dotenv = Dotenv.configure().directory("/src/main/resources").load();
+    private static final Dotenv dotenv = Dotenv.configure().filename(".env").ignoreIfMalformed().load();
 
     private static final String jdbcUrl = dotenv.get("jdbcUrl");
     private static final String username = dotenv.get("username");
