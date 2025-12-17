@@ -17,41 +17,39 @@ import java.util.Optional;
 public class DataRetriever {
     public Optional<Team> findTeamById(Integer id){
         String sql = """
-                SELECT team.id, team.name, team.continent, player.id, player.name, player.position
+                SELECT team.id AS team_id, team.name AS team_name, team.continent, player.id AS player_id, player.name AS player_name, player.position
                 FROM team
                 LEFT JOIN player
                 ON team.id = player.id_team
                 WHERE team.id = ?;
                 """;
         List<Player> players = new ArrayList<>();
-        Team team = new Team();
+        Team team = null;
 
-        try(Connection conn = DBConnection.getDBConnection();){
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try(Connection conn = DBConnection.getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);){
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()){
+                if(team == null){
+                    team = new Team(rs.getInt("player_id"), rs.getString("player_name"), ContinentEnum.valueOf(rs.getString("continent")), players);
+                }
 
-                Player player = null;
-                if(rs.getObject("id") != null){
-                    int playerId = rs.getInt("id");
-                    String name = rs.getString("name");
-                    int age = rs.getInt("age");
-                    String position = rs.getString("position");
-                    player = new Player(playerId, name, age, PlayerPositionEnum.valueOf(position), team);
+                if(rs.getObject("player_id") != null){
+                    Player player = new Player(
+                            rs.getInt("player_id"),
+                            rs.getString("player_name"),
+                            rs.getInt("age"),
+                            PlayerPositionEnum.valueOf(rs.getString("position")),
+                            team
+                    );
+                    players.add(player);
                 }
-                for (int i =0; i<players.size(); i++){
-                    players.get(i).setTeam(team);
-                }
-                players.add(player);
-                Team newTeam = new Team(rs.getInt("id"), rs.getString("name"), ContinentEnum.valueOf(rs.getString("continent")), players);
-                team = newTeam;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return Optional.of(team);
+        return Optional.ofNullable(team);
     }
 
     public List<Player> findPlayers(int page, int size){
