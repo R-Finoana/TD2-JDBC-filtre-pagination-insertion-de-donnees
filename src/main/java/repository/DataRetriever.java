@@ -53,7 +53,41 @@ public class DataRetriever {
     }
 
     public List<Player> findPlayers(int page, int size){
-        throw new RuntimeException("Not supported yet");
+        List<Player> players = new ArrayList<>();
+
+        int offset = (page-1) * size;
+        String sql = """
+                SELECT player.id AS player_id, player.name AS player_name, player.age, player.position, team.id AS team_id, team.name AS team_name, team.continent
+                FROM player
+                ORDER BY player_id
+                LIMIT ? OFFSET ?
+                """;
+
+        try(Connection conn = DBConnection.getDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql);){
+
+            stmt.setInt(1, size);
+            stmt.setInt(2, offset);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                Team team = null;
+                if(rs.getObject("team_id") != null){
+                    team = new Team(rs.getInt("team_id"), rs.getString("team_name"), ContinentEnum.valueOf(rs.getString("continent")), players);
+                }
+
+                players.add(new Player(
+                        rs.getInt("player_id"),
+                        rs.getString("player_name"),
+                        rs.getInt("age"),
+                        PlayerPositionEnum.valueOf(rs.getString("position")),
+                        team
+                ));
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        return players;
     }
 
     public List<Player> createPlayers(List<Player> newPlayers){

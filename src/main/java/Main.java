@@ -15,7 +15,7 @@ public class Main {
             Team team = teamById.get();
             System.out.println(team.getName()+" "+team.getContinent());
 
-            System.out.println("\nPlayers list :");
+            System.out.println("Players list :");
             for (Player player : team.getPlayers()) {
                 System.out.println("- " + player.getName() +
                         " (age: " + player.getAge() +
