@@ -17,7 +17,7 @@ import java.util.Optional;
 public class DataRetriever {
     public Optional<Team> findTeamById(Integer id){
         String sql = """
-                SELECT team.id AS team_id, team.name AS team_name, team.continent, player.id AS player_id, player.name AS player_name, player.position
+                SELECT team.id AS team_id, team.name AS team_name, team.continent, player.id AS player_id, player.name AS player_name, player.age, player.position
                 FROM team
                 LEFT JOIN player
                 ON team.id = player.id_team

@@ -1,0 +1,28 @@
+import model.Player;
+import model.Team;
+import repository.DataRetriever;
+
+import java.util.Optional;
+
+public class Main {
+    public static void main() {
+        DataRetriever dr = new DataRetriever();
+
+        System.out.println("=== Find team by id ===");
+        Optional<Team> teamById = dr.findTeamById(1);
+
+        if(teamById.isPresent()){
+            Team team = teamById.get();
+            System.out.println(team.getName()+" "+team.getContinent());
+
+            System.out.println("\nPlayers list :");
+            for (Player player : team.getPlayers()) {
+                System.out.println("- " + player.getName() +
+                        " (age: " + player.getAge() +
+                        ", position: " + player.getPosition() + ")");
+            }
+        } else{
+            System.out.println("No team found");
+        }
+    }
+}
