@@ -24,5 +24,11 @@ public class Main {
         } else{
             System.out.println("No team found");
         }
+
+        System.out.println("\n=== Players list ===");
+        System.out.println("-- Page 1, size 2 --");
+        dr.findPlayers(1, 2).forEach(System.out::println);
+        System.out.println("-- Page 3, size 5 --");
+        dr.findPlayers(3, 5).forEach(System.out::println);
     }
 }
