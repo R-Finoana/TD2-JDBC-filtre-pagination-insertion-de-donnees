@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class DataRetriever {
@@ -100,6 +101,82 @@ public class DataRetriever {
 
     public List<Team> findTeamsByPlayerName(String playerName){
         throw new RuntimeException("Not supported yet");
+    }
+
+    public List<Player> findPlayersByCriteriaNotFiltered(String playerName, PlayerPositionEnum position, String teamName,
+                                               ContinentEnum continent){
+        List<Player> players = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("""
+                SELECT DISTINCT ON (player.id)
+                player.id AS player_id,
+                player.name AS player_name,
+                player.age,
+                player.position AS player_position,
+                team.id AS id_team,
+                team.name AS team_name,
+                team.continent AS team_continent
+                FROM player
+                LEFT JOIN team
+                ON team.id = player.id_team
+                WHERE 1=1
+                """);
+
+        List<Object> params = new ArrayList<>();
+
+        if(playerName != null){
+            sql.append("AND player_name ILIKE ? ");
+            params.add("%"+playerName+"%");
+        }
+
+        if(position != null){
+            sql.append("WHERE player_position = position ");
+            params.add("%"+position+"%");
+        }
+
+        if(continent != null){
+            sql.append("WHERE player_continent = continent");
+            params.add("%"+continent+"%");
+        }
+
+        if(teamName != null){
+            sql.append(("AND team_name ILIKE ?"));
+            params.add("%"+teamName+"%");
+        }
+
+        sql.append("ORDER BY player_id, team_id");
+
+        try(Connection conn = DBConnection.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            for(int i = 0; i<params.size(); i++){
+                stmt.setObject(i+1, params.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                Team team = null;
+                if(rs.getObject("id_team") != null){
+                    team = new Team(
+                            rs.getInt("id_team"),
+                            rs.getString("team_name"),
+                            ContinentEnum.valueOf(rs.getString("team_continent")),
+                            players
+                    );
+                }
+
+                players.add(new Player(
+                        rs.getInt("player_id"),
+                        rs.getString("player_name"),
+                        rs.getInt("age"),
+                        PlayerPositionEnum.valueOf(rs.getString("player_position")),
+                        team
+                ));
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        return players;
     }
 
     public List<Player> findPlayersByCriteria(String playerName, PlayerPositionEnum position, String teamName,
