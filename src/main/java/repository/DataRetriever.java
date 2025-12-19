@@ -147,7 +147,7 @@ public class DataRetriever {
         sql.append("ORDER BY player_id, team_id");
 
         try(Connection conn = DBConnection.getDBConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)){
+            PreparedStatement stmt = conn.prepareStatement(sql.toString())){
 
             for(int i = 0; i<params.size(); i++){
                 stmt.setObject(i+1, params.get(i));
@@ -181,6 +181,14 @@ public class DataRetriever {
 
     public List<Player> findPlayersByCriteria(String playerName, PlayerPositionEnum position, String teamName,
                                               ContinentEnum continent, int page, int size){
-        throw new RuntimeException("Not supported yet");
+        List<Player> filteredPlayer = findPlayersByCriteriaNotFiltered(playerName, position, teamName, continent);
+
+        int from = (page-1)*size;
+        int to = Math.min(from + size, filteredPlayer.size());
+
+        if(from > filteredPlayer.size()){
+            return new ArrayList<>();
+        }
+        return filteredPlayer.subList(from, to);
     }
 }
