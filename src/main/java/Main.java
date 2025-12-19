@@ -1,4 +1,6 @@
+import model.ContinentEnum;
 import model.Player;
+import model.PlayerPositionEnum;
 import model.Team;
 import repository.DataRetriever;
 
@@ -30,5 +32,8 @@ public class Main {
         dr.findPlayers(1, 2).forEach(System.out::println);
         System.out.println("-- Page 3, size 5 --");
         dr.findPlayers(3, 5).forEach(System.out::println);
+
+        System.out.println("\n=== Find Player by Criteria ===");
+        dr.findPlayersByCriteria("ud", PlayerPositionEnum.MIDF, "Madrid", ContinentEnum.EUROPA, 1, 10);
     }
 }
