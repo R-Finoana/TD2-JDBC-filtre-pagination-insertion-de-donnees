@@ -110,13 +110,12 @@ public class DataRetriever {
         throw new RuntimeException("Not supported yet");
     }
 
-    public List<Player> findPlayersByCriteriaNotFiltered(String playerName, PlayerPositionEnum position, String teamName,
-                                               ContinentEnum continent){
+    public List<Player> findPlayersByCriteria(String playerName, PlayerPositionEnum position, String teamName,
+                                               ContinentEnum continent, int page, int size){
         List<Player> players = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("""
-                SELECT DISTINCT ON (player.id)
-                player.id AS player_id,
+                SELECT player.id AS player_id,
                 player.name AS player_name,
                 player.age,
                 player.position AS player_position,
@@ -132,26 +131,29 @@ public class DataRetriever {
         List<Object> params = new ArrayList<>();
 
         if(playerName != null){
-            sql.append("AND player_name ILIKE ? ");
+            sql.append(" AND player.name ILIKE ? ");
             params.add("%"+playerName+"%");
         }
 
         if(position != null){
-            sql.append("WHERE player_position = position ");
-            params.add("%"+position+"%");
+            sql.append(" AND player.position = ? ");
+            params.add(position.name());
         }
 
         if(continent != null){
-            sql.append("WHERE player_continent = continent");
-            params.add("%"+continent+"%");
+            sql.append(" AND team.continent = ?");
+            params.add(continent.name());
         }
 
         if(teamName != null){
-            sql.append(("AND team_name ILIKE ?"));
+            sql.append((" AND team.name ILIKE ?"));
             params.add("%"+teamName+"%");
         }
 
-        sql.append("ORDER BY player_id, team_id");
+        sql.append(" ORDER BY player.id");
+        sql.append(" LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((page-1)*size);
 
         try(Connection conn = DBConnection.getDBConnection();
             PreparedStatement stmt = conn.prepareStatement(sql.toString())){
@@ -168,7 +170,7 @@ public class DataRetriever {
                             rs.getInt("id_team"),
                             rs.getString("team_name"),
                             ContinentEnum.valueOf(rs.getString("team_continent")),
-                            players
+                            new ArrayList<>()
                     );
                 }
 
@@ -184,18 +186,5 @@ public class DataRetriever {
             throw new RuntimeException(e);
         }
         return players;
-    }
-
-    public List<Player> findPlayersByCriteria(String playerName, PlayerPositionEnum position, String teamName,
-                                              ContinentEnum continent, int page, int size){
-        List<Player> filteredPlayer = findPlayersByCriteriaNotFiltered(playerName, position, teamName, continent);
-
-        int from = (page-1)*size;
-        int to = Math.min(from + size, filteredPlayer.size());
-
-        if(from > filteredPlayer.size()){
-            return new ArrayList<>();
-        }
-        return filteredPlayer.subList(from, to);
     }
 }
