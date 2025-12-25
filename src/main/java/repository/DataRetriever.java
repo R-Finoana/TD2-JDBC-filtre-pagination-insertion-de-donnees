@@ -33,7 +33,12 @@ public class DataRetriever {
 
             while (rs.next()){
                 if(team == null){
-                    team = new Team(rs.getInt("player_id"), rs.getString("player_name"), ContinentEnum.valueOf(rs.getString("continent")), players);
+                    team = new Team(
+                            rs.getInt("team_id"),
+                            rs.getString("team_name"),
+                            ContinentEnum.valueOf(rs.getString("continent")),
+                            players
+                    );
                 }
 
                 if(rs.getObject("player_id") != null){
