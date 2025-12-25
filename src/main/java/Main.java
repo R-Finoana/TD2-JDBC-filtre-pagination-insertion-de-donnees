@@ -34,6 +34,6 @@ public class Main {
         dr.findPlayers(3, 5).forEach(System.out::println);
 
         System.out.println("\n=== Find Player by Criteria ===");
-        dr.findPlayersByCriteria("ud", PlayerPositionEnum.MIDF, "Madrid", ContinentEnum.EUROPA, 1, 10);
+        dr.findPlayersByCriteria("ud", PlayerPositionEnum.MIDF, "Madrid", ContinentEnum.EUROPA, 1, 10).forEach(System.out::println);
     }
 }

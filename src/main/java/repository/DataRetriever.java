@@ -130,22 +130,22 @@ public class DataRetriever {
 
         List<Object> params = new ArrayList<>();
 
-        if(playerName != null){
+        if(playerName != null && !playerName.trim().isEmpty()){
             sql.append(" AND player.name ILIKE ? ");
             params.add("%"+playerName+"%");
         }
 
         if(position != null){
-            sql.append(" AND player.position = ? ");
+            sql.append(" AND player.position = ?::\"position\" ");
             params.add(position.name());
         }
 
         if(continent != null){
-            sql.append(" AND team.continent = ?");
+            sql.append(" AND team.continent = ?::continent");
             params.add(continent.name());
         }
 
-        if(teamName != null){
+        if(teamName != null && !teamName.trim().isEmpty()){
             sql.append((" AND team.name ILIKE ?"));
             params.add("%"+teamName+"%");
         }
