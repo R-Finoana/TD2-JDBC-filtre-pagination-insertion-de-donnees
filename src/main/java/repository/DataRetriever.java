@@ -60,6 +60,8 @@ public class DataRetriever {
         String sql = """
                 SELECT player.id AS player_id, player.name AS player_name, player.age, player.position, team.id AS team_id, team.name AS team_name, team.continent
                 FROM player
+                LEFT JOIN team
+                ON player.id_team = team.id
                 ORDER BY player_id
                 LIMIT ? OFFSET ?
                 """;
@@ -74,7 +76,7 @@ public class DataRetriever {
             while(rs.next()){
                 Team team = null;
                 if(rs.getObject("team_id") != null){
-                    team = new Team(rs.getInt("team_id"), rs.getString("team_name"), ContinentEnum.valueOf(rs.getString("continent")), players);
+                    team = new Team(rs.getInt("team_id"), rs.getString("team_name"), ContinentEnum.valueOf(rs.getString("continent")), new ArrayList<>());
                 }
 
                 players.add(new Player(
