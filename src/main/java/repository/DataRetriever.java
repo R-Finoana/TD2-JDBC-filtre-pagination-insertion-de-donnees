@@ -118,7 +118,7 @@ public class DataRetriever {
 
                     ResultSet rs = checkStmt.executeQuery();
                     while(rs.next()){
-                        throw new RuntimeException("Player with is "+player.getId()+" already exists");
+                        throw new RuntimeException("Player with id "+player.getId()+" already exists");
                     }
 
                     insertStmt.setInt(1, player.getId());

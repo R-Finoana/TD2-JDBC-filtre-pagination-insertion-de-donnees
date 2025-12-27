@@ -4,6 +4,8 @@ import model.PlayerPositionEnum;
 import model.Team;
 import repository.DataRetriever;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Main {
@@ -35,5 +37,19 @@ public class Main {
 
         System.out.println("\n=== Find Player by Criteria ===");
         dr.findPlayersByCriteria("ud", PlayerPositionEnum.MIDF, "Madrid", ContinentEnum.EUROPA, 1, 10).forEach(System.out::println);
+
+
+        System.out.println("\n=== Create players with a raised exception ===");
+        List<Player> duplicatedPlayers = List.of(
+                new Player(6, "Jude Bellingham", 23, PlayerPositionEnum.STR, null),
+                new Player(7, "Pedri", 24, PlayerPositionEnum.MIDF, null)
+        );
+
+        try{
+            dr.createPlayers(duplicatedPlayers);
+            System.out.println("No Exception raised");
+        } catch (RuntimeException e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
