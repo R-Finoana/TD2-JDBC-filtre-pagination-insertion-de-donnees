@@ -6,10 +6,7 @@ import model.Player;
 import model.PlayerPositionEnum;
 import model.Team;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -99,7 +96,51 @@ public class DataRetriever {
     }
 
     public List<Player> createPlayers(List<Player> newPlayers){
-        throw new RuntimeException("Not supported yet");
+        if(newPlayers.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        String checkSql = "SELECT id FROM player WHERE id = ?";
+        String insertSql = """
+                INSERT INTO player (id, name, age, position, id_team)
+                VALUES (?, ?, ?, ?::"position", ?)
+                """ ;
+
+        try(Connection conn = DBConnection.getDBConnection()){
+            conn.setAutoCommit(false);
+
+            try(
+                    PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+                    PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+            ){
+                for(Player player : newPlayers){
+                    checkStmt.setInt(1, player.getId());
+
+                    ResultSet rs = checkStmt.executeQuery();
+                    while(rs.next()){
+                        throw new RuntimeException("Player with is "+player.getId()+" already exists");
+                    }
+
+                    insertStmt.setInt(1, player.getId());
+                    insertStmt.setString(2, player.getName());
+                    insertStmt.setInt(3, player.getAge());
+                    insertStmt.setString(4, player.getPosition().name());
+                    if(player.getTeam() != null){
+                        insertStmt.setInt(5, player.getTeam().getId());
+                    } else{
+                        insertStmt.setInt(5, Types.INTEGER);
+                    }
+                    insertStmt.executeUpdate();
+                }
+                conn.commit();
+                return new ArrayList<>(newPlayers);
+            } catch (Exception e) {
+                conn.rollback();
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
     public Team saveTeam(Team teamToSave){
