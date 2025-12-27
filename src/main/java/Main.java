@@ -51,5 +51,19 @@ public class Main {
         } catch (RuntimeException e){
             throw new RuntimeException(e.getMessage());
         }
+
+
+        System.out.println("\n=== Create players with valid informations ===");
+        List<Player> validPlayers = List.of(
+                new Player(6, "Vini", 25, PlayerPositionEnum.STR, null),
+                new Player(7, "Pedri", 24, PlayerPositionEnum.MIDF, null)
+        );
+
+        try{
+            List<Player> created = dr.createPlayers(validPlayers);
+            System.out.println(created);
+        } catch(RuntimeException e){
+            System.out.println(e.getMessage());
+        }
     }
 }
