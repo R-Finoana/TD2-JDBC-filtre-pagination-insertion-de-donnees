@@ -42,7 +42,8 @@ public class DataRetriever {
                             rs.getString("player_name"),
                             rs.getInt("age"),
                             PlayerPositionEnum.valueOf(rs.getString("position")),
-                            rs.getInt("goal_nb"),
+                            rs.getObject("goal_nb") == null ? null :
+                                    (Integer) rs.getObject("goal_nb"),
                             team
                     );
                     players.add(player);
@@ -85,7 +86,8 @@ public class DataRetriever {
                         rs.getString("player_name"),
                         rs.getInt("age"),
                         PlayerPositionEnum.valueOf(rs.getString("position")),
-                        rs.getInt("goal_nb"),
+                        rs.getObject("goal_nb") == null ? null :
+                                (Integer) rs.getObject("goal_nb"),
                         team
                 ));
             }
@@ -322,7 +324,8 @@ public class DataRetriever {
                         rs.getString("player_name"),
                         rs.getInt("age"),
                         PlayerPositionEnum.valueOf(rs.getString("player_position")),
-                        rs.getInt("goal_nb"),
+                        rs.getObject("goal_nb") == null ? null :
+                                (Integer) rs.getObject("goal_nb"),
                         team
                 ));
             }
