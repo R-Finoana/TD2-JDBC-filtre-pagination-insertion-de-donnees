@@ -20,3 +20,11 @@ CREATE TABLE Player (
                         id_team INT,
                         CONSTRAINT Player_id_team_FK FOREIGN KEY (id_team) REFERENCES Team (id)
 );
+
+ALTER TABLE Player ADD COLUMN goal_nb int;
+
+UPDATE Player SET goal_nb = 0 WHERE id = 1;
+UPDATE Player SET goal_nb = 2 WHERE id = 2;
+UPDATE Player SET goal_nb = 5 WHERE id = 3;
+UPDATE Player SET goal_nb = NULL WHERE id = 4;
+UPDATE Player SET goal_nb = NULL WHERE id = 5;

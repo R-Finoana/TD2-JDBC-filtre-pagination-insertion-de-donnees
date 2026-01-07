@@ -87,7 +87,7 @@ public class Team {
             Integer goals = player.getGoalNb();
 
             if (player.getGoalNb() == null) {
-                throw new RuntimeException("Goals number of "+player+" is unknown. It's impossible to calculate the total of goals of the team.")
+                throw new RuntimeException("Goals number of "+player.getName()+" is unknown. It's impossible to calculate the total of goals of the team.");
             }
             totalGoals += goals;
         }
