@@ -44,6 +44,7 @@ public class DataRetriever {
                             rs.getString("player_name"),
                             rs.getInt("age"),
                             PlayerPositionEnum.valueOf(rs.getString("position")),
+                            Optional.of(rs.getInt("goal_nb")),
                             team
                     );
                     players.add(player);
@@ -86,6 +87,7 @@ public class DataRetriever {
                         rs.getString("player_name"),
                         rs.getInt("age"),
                         PlayerPositionEnum.valueOf(rs.getString("position")),
+                        Optional.of(rs.getInt("goal_nb")),
                         team
                 ));
             }
@@ -220,6 +222,7 @@ public class DataRetriever {
                         rs.getString("player_name"),
                         rs.getInt("age"),
                         PlayerPositionEnum.valueOf(rs.getString("player_position")),
+                        Optional.of(rs.getInt("goal_nb")),
                         team
                 ));
             }

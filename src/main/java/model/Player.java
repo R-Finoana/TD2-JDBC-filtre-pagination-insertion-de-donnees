@@ -1,19 +1,22 @@
 package model;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class Player {
     private int id;
     private String name;
     private int age;
     private PlayerPositionEnum position;
+    private Optional<Integer> goalNb;
     private Team team;
 
-    public Player(int id, String name, int age, PlayerPositionEnum position, Team team) {
+    public Player(int id, String name, int age, PlayerPositionEnum position, Optional<Integer> goalNb, Team team) {
         this.id = id;
         this.name = name;
         this.age = age;
         this.position = position;
+        this.goalNb = goalNb;
         this.team = team;
     }
 
@@ -55,6 +58,14 @@ public class Player {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public int getGoalNb() {
+        return goalNb;
+    }
+
+    public void setGoalNb(int goalNb) {
+        this.goalNb = goalNb;
     }
 
     @Override

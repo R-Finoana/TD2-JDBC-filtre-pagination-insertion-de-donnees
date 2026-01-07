@@ -41,8 +41,8 @@ public class Main {
 
         System.out.println("\n=== Create players with a raised exception ===");
         List<Player> duplicatedPlayers = List.of(
-                new Player(6, "Jude Bellingham", 23, PlayerPositionEnum.STR, null),
-                new Player(7, "Pedri", 24, PlayerPositionEnum.MIDF, null)
+                new Player(6, "Jude Bellingham", 23, PlayerPositionEnum.STR, null, null),
+                new Player(7, "Pedri", 24, PlayerPositionEnum.MIDF, null, null)
         );
 
         try{
@@ -55,8 +55,8 @@ public class Main {
 
         System.out.println("\n=== Create players with valid informations ===");
         List<Player> validPlayers = List.of(
-                new Player(6, "Vini", 25, PlayerPositionEnum.STR, null),
-                new Player(7, "Pedri", 24, PlayerPositionEnum.MIDF, null)
+                new Player(6, "Vini", 25, PlayerPositionEnum.STR, null, null),
+                new Player(7, "Pedri", 24, PlayerPositionEnum.MIDF, null, null)
         );
 
         try{
