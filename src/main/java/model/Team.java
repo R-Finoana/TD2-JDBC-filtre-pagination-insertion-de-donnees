@@ -75,4 +75,22 @@ public class Team {
     public String getTeamName(){
         throw new RuntimeException("Not supported yet");
     }
+
+    public Integer getPlayersGoals(){
+        if(players == null || players.isEmpty()){
+            return 0;
+        }
+
+        int totalGoals = 0;
+
+        for (Player player : players) {
+            Integer goals = player.getGoalNb();
+
+            if (player.getGoalNb() == null) {
+                throw new RuntimeException("Goals number of "+player+" is unknown. It's impossible to calculate the total of goals of the team.")
+            }
+            totalGoals += goals;
+        }
+        return totalGoals;
+    }
 }
