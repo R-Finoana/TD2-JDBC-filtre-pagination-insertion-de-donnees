@@ -126,7 +126,7 @@ public class DataRetriever {
                     insertStmt.setInt(3, player.getAge());
                     insertStmt.setString(4, player.getPosition().name());
                     if(player.getTeam() != null){
-                        insertStmt.setInt(5, player.getTeam().getId());
+                        insertStmt.setNull(5, player.getTeam().getId());
                     } else{
                         insertStmt.setInt(5, Types.INTEGER);
                     }
