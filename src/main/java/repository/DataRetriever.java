@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class DataRetriever {
     public Optional<Team> findTeamById(Integer id){
         String sql = """
-                SELECT team.id AS team_id, team.name AS team_name, team.continent, player.id AS player_id, player.name AS player_name, player.age, player.position
+                SELECT team.id AS team_id, team.name AS team_name, team.continent, player.id AS player_id, player.name AS player_name, player.age, player.position, player.goal_nb
                 FROM team
                 LEFT JOIN player
                 ON team.id = player.id_team
@@ -60,7 +60,7 @@ public class DataRetriever {
 
         int offset = (page-1) * size;
         String sql = """
-                SELECT player.id AS player_id, player.name AS player_name, player.age, player.position, team.id AS team_id, team.name AS team_name, team.continent
+                SELECT player.id AS player_id, player.name AS player_name, player.age, player.position, player.goal_nb, team.id AS team_id, team.name AS team_name, team.continent
                 FROM player
                 LEFT JOIN team
                 ON player.id_team = team.id
@@ -264,6 +264,7 @@ public class DataRetriever {
                 player.name AS player_name,
                 player.age,
                 player.position AS player_position,
+                player.goal_nb,
                 team.id AS id_team,
                 team.name AS team_name,
                 team.continent AS team_continent
