@@ -29,6 +29,10 @@ public class Main {
             System.out.println("No team found");
         }
 
+        System.out.println("=== Get players goal ===");
+        Team team = dr.findTeamById(1).get();
+        System.out.println(team.getPlayersGoals());
+
         System.out.println("\n=== Players list ===");
         System.out.println("-- Page 1, size 2 --");
         dr.findPlayers(1, 2).forEach(System.out::println);
