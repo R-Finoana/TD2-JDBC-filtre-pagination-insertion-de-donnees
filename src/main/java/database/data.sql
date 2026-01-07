@@ -13,3 +13,7 @@ INSERT INTO Player (id, name, age, position, id_team)
            (3, 'Jude Bellingham', 21, 'MIDF', 1),
            (4, 'Robert Lewandowski', 36, 'STR', 2),
            (5, 'Antoine Griezmann', 33, 'STR', 3);
+
+ALTER TABLE Player ADD COLUMN goal_nb int;
+
+INSERT INTO Player (goal_nb) VALUES (0), (2), (5), (null), (null);
