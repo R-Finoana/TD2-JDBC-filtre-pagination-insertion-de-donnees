@@ -7,10 +7,8 @@ import model.PlayerPositionEnum;
 import model.Team;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataRetriever {
     public Optional<Team> findTeamById(Integer id){
@@ -44,7 +42,7 @@ public class DataRetriever {
                             rs.getString("player_name"),
                             rs.getInt("age"),
                             PlayerPositionEnum.valueOf(rs.getString("position")),
-                            Optional.of(rs.getInt("goal_nb")),
+                            rs.getInt("goal_nb"),
                             team
                     );
                     players.add(player);
@@ -87,7 +85,7 @@ public class DataRetriever {
                         rs.getString("player_name"),
                         rs.getInt("age"),
                         PlayerPositionEnum.valueOf(rs.getString("position")),
-                        Optional.of(rs.getInt("goal_nb")),
+                        rs.getInt("goal_nb"),
                         team
                 ));
             }
@@ -146,7 +144,109 @@ public class DataRetriever {
     }
 
     public Team saveTeam(Team teamToSave){
-        throw new RuntimeException("Not supported yet");
+        if(teamToSave == null){
+            throw new IllegalArgumentException("Team to save cannot be null");
+        }
+
+            String checkTeamSql = "SELECT id FROM team WHERE id = ?";
+            String insertTeamSql = "INSERT INTO team (id, name, continent) VALUES (?, ?, ?::continent)";
+            String updateTeamSql = "UPDATE team SET name = ?, continent = ?::continent WHERE id = ?";
+
+            String insertPlayerSql = "INSERT INTO player (id, name, age, position, id_team) VALUES (?, ?, ?, ?::position, ?)";
+            String updatePlayerSql = "UPDATE player SET name = ?, age = ?, position = ?::position, id_team = ? WHERE id = ?";
+
+            try (Connection conn = DBConnection.getDBConnection()) {
+                conn.setAutoCommit(false);
+
+                try {
+                    boolean teamExists;
+                    try (PreparedStatement checkStmt = conn.prepareStatement(checkTeamSql)) {
+                        checkStmt.setInt(1, teamToSave.getId());
+                        ResultSet rs = checkStmt.executeQuery();
+                        teamExists = rs.next();
+                    }
+
+                    if (teamExists) {
+                        try (PreparedStatement updateStmt = conn.prepareStatement(updateTeamSql)) {
+                            updateStmt.setString(1, teamToSave.getName());
+                            updateStmt.setString(2, teamToSave.getContinent().name());
+                            updateStmt.setInt(3, teamToSave.getId());
+                            updateStmt.executeUpdate();
+                        }
+                    } else {
+                        try (PreparedStatement insertStmt = conn.prepareStatement(insertTeamSql)) {
+                            insertStmt.setInt(1, teamToSave.getId());
+                            insertStmt.setString(2, teamToSave.getName());
+                            insertStmt.setString(3, teamToSave.getContinent().name());
+                            insertStmt.executeUpdate();
+                        }
+                    }
+
+                    Team savedTeam = new Team(
+                            teamToSave.getId(),
+                            teamToSave.getName(),
+                            teamToSave.getContinent(),
+                            new ArrayList<>()
+                    );
+
+                    List<Player> players = teamToSave.getPlayers() != null ? teamToSave.getPlayers() : Collections.emptyList();
+
+                    if (!players.isEmpty()) {
+                        String ids = players.stream().map(p -> String.valueOf(p.getId())).collect(Collectors.joining(", "));
+                        String detachSql = "UPDATE player SET id_team = NULL WHERE id_team = ? AND id NOT IN (" + ids + ")";
+                        try (PreparedStatement stmt = conn.prepareStatement(detachSql)) {
+                            stmt.setInt(1, savedTeam.getId());
+                            stmt.executeUpdate();
+                        }
+                    } else {
+                        try (PreparedStatement stmt = conn.prepareStatement("UPDATE player SET id_team = NULL WHERE id_team = ?")) {
+                            stmt.setInt(1, savedTeam.getId());
+                            stmt.executeUpdate();
+                        }
+                    }
+
+                    for (Player player : players) {
+                        player.setTeam(savedTeam);
+
+                        boolean playerExists;
+                        try (PreparedStatement check = conn.prepareStatement("SELECT id FROM player WHERE id = ?")) {
+                            check.setInt(1, player.getId());
+                            playerExists = check.executeQuery().next();
+                        }
+
+                        if (playerExists) {
+                            try (PreparedStatement update = conn.prepareStatement(updatePlayerSql)) {
+                                update.setString(1, player.getName());
+                                update.setInt(2, player.getAge());
+                                update.setString(3, player.getPosition().name());
+                                update.setInt(4, savedTeam.getId());
+                                update.setInt(5, player.getId());
+                                update.executeUpdate();
+                            }
+                        } else {
+                            try (PreparedStatement insert = conn.prepareStatement(insertPlayerSql)) {
+                                insert.setInt(1, player.getId());
+                                insert.setString(2, player.getName());
+                                insert.setInt(3, player.getAge());
+                                insert.setString(4, player.getPosition().name());
+                                insert.setInt(5, savedTeam.getId());
+                                insert.executeUpdate();
+                            }
+                        }
+                        savedTeam.getPlayers().add(player);
+                    }
+
+                    conn.commit();
+                    return savedTeam;
+
+                } catch (Exception e) {
+                    conn.rollback();
+                    throw new RuntimeException(e);
+                }
+            }
+            catch (SQLException e){
+                throw new RuntimeException(e);
+        }
     }
 
     public List<Team> findTeamsByPlayerName(String playerName){
@@ -222,7 +322,7 @@ public class DataRetriever {
                         rs.getString("player_name"),
                         rs.getInt("age"),
                         PlayerPositionEnum.valueOf(rs.getString("player_position")),
-                        Optional.of(rs.getInt("goal_nb")),
+                        rs.getInt("goal_nb"),
                         team
                 ));
             }
