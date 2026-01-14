@@ -68,7 +68,7 @@ public class Team {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", continent=" + continent +
-                ", players=" + players +
+                //", players=" + players +
                 '}';
     }
 
