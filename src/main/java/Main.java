@@ -29,7 +29,15 @@ public class Main {
             System.out.println("No team found");
         }
 
-        System.out.println("=== Get players goal ===");
+        Team realMadrid = teamById.get();
+        Player vini = new Player(6, "Vini", 25, PlayerPositionEnum.STR, null, null);
+        realMadrid.getPlayers().add(vini);
+        dr.saveTeam(realMadrid);
+        Team newReal = dr.findTeamById(1).get();
+        System.out.println("\n=== New list of Real Madrid after adding Vini ===");
+        newReal.getPlayers().forEach(System.out::println);
+
+        System.out.println("\n=== Get players goal ===");
         Team team = dr.findTeamById(1).get();
         System.out.println(team.getPlayersGoals());
 
