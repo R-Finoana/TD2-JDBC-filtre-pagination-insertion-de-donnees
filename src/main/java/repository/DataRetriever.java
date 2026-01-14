@@ -42,8 +42,7 @@ public class DataRetriever {
                             rs.getString("player_name"),
                             rs.getInt("age"),
                             PlayerPositionEnum.valueOf(rs.getString("position")),
-                            rs.getObject("goal_nb") == null ? null :
-                                    (Integer) rs.getObject("goal_nb"),
+                            rs.getObject("goal_nb") != null ? (Integer) rs.getObject("goal_nb") : null,
                             team
                     );
                     players.add(player);
@@ -154,8 +153,12 @@ public class DataRetriever {
             String insertTeamSql = "INSERT INTO team (id, name, continent) VALUES (?, ?, ?::continent)";
             String updateTeamSql = "UPDATE team SET name = ?, continent = ?::continent WHERE id = ?";
 
-            String insertPlayerSql = "INSERT INTO player (id, name, age, position, id_team) VALUES (?, ?, ?, ?::position, ?)";
-            String updatePlayerSql = "UPDATE player SET name = ?, age = ?, position = ?::position, id_team = ? WHERE id = ?";
+            String insertPlayerSql = """
+                                    INSERT INTO player (id, name, age, position, goal_nb, id_team) VALUES (?, ?, ?, ?::"position", ?, ?)
+                                    """;
+            String updatePlayerSql = """
+                                    UPDATE player SET name = ?, age = ?, position = ?::"position", goal_nb = ?, id_team = ? WHERE id = ?
+                                    """;
 
             try (Connection conn = DBConnection.getDBConnection()) {
                 conn.setAutoCommit(false);
@@ -221,8 +224,9 @@ public class DataRetriever {
                                 update.setString(1, player.getName());
                                 update.setInt(2, player.getAge());
                                 update.setString(3, player.getPosition().name());
-                                update.setInt(4, savedTeam.getId());
-                                update.setInt(5, player.getId());
+                                update.setObject(4, player.getGoalNb());
+                                update.setInt(5, savedTeam.getId());
+                                update.setInt(6, player.getId());
                                 update.executeUpdate();
                             }
                         } else {
@@ -231,7 +235,8 @@ public class DataRetriever {
                                 insert.setString(2, player.getName());
                                 insert.setInt(3, player.getAge());
                                 insert.setString(4, player.getPosition().name());
-                                insert.setInt(5, savedTeam.getId());
+                                insert.setObject(5, player.getGoalNb());
+                                insert.setInt(6, savedTeam.getId());
                                 insert.executeUpdate();
                             }
                         }
